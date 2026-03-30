@@ -1,1 +1,624 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceIQ — Simulez, Apprenez, Économisez</title>
+  <meta name="description" content="Outils gratuits pour gérer votre budget, simuler vos crédits et tester vos connaissances financières. Entièrement gratuit.">
+  <meta name="keywords" content="simulateur budget, calculateur crédit, quiz finance, gestion argent, économies">
+  
+  <!-- AdSense placeholder — remplace ca-pub-XXXXXXXXXXXXXXXX par ton ID AdSense -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --surface: #111827;
+      --card: #161f35;
+      --accent: #00e5a0;
+      --accent2: #4f8eff;
+      --text: #f0f4ff;
+      --muted: #7a8aaa;
+      --border: rgba(255,255,255,0.07);
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: var(--font-head); font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent); color: #0a0f1e; border: none; padding: 9px 22px;
+      border-radius: 50px; font-family: var(--font-body); font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: transform .2s, opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; transform: scale(1.03); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0,229,160,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(79,142,255,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25);
+      border-radius: 50px; padding: 6px 16px; font-size: 13px; color: var(--accent);
+      margin-bottom: 28px; animation: fadeUp .6s ease both;
+    }
+    .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    h1 {
+      font-family: var(--font-head); font-size: clamp(42px, 8vw, 80px);
+      font-weight: 800; line-height: 1.05; letter-spacing: -2px;
+      animation: fadeUp .7s .1s ease both;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+    h1 .blue { color: var(--accent2); }
+
+    .hero-sub {
+      max-width: 560px; color: var(--muted); font-size: 18px; font-weight: 300;
+      margin: 24px auto 40px; animation: fadeUp .7s .2s ease both;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: fadeUp .7s .3s ease both; }
+    .btn-primary {
+      background: var(--accent); color: #0a0f1e; border: none; padding: 14px 32px;
+      border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: transform .2s, box-shadow .2s; font-family: var(--font-body);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,229,160,0.3); }
+    .btn-secondary {
+      background: transparent; color: var(--text); border: 1px solid var(--border);
+      padding: 14px 32px; border-radius: 50px; font-size: 16px; font-weight: 500;
+      cursor: pointer; transition: border-color .2s; font-family: var(--font-body);
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.25); }
+
+    .hero-stats {
+      display: flex; gap: 48px; justify-content: center; margin-top: 64px;
+      animation: fadeUp .7s .4s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: 13px; color: var(--muted); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ─── AD BANNER ─── */
+    .ad-banner {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; margin: 0 auto; max-width: 740px;
+      text-align: center; color: var(--muted); font-size: 12px;
+    }
+    .ad-inner { min-height: 90px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border-radius: 8px; }
+
+    /* ─── SECTION TOOLS ─── */
+    .section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-family: var(--font-head); font-size: clamp(28px, 5vw, 48px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+    .section-sub { color: var(--muted); font-size: 17px; max-width: 500px; }
+
+    .tools-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px; margin-top: 48px;
+    }
+    .tool-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px; cursor: pointer;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      text-decoration: none; color: inherit; display: block;
+    }
+    .tool-card:hover { transform: translateY(-4px); border-color: rgba(0,229,160,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .tool-icon { font-size: 36px; margin-bottom: 20px; display: block; }
+    .tool-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .tool-desc { color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .tool-tag {
+      display: inline-block; margin-top: 18px; background: rgba(0,229,160,0.1);
+      color: var(--accent); font-size: 12px; font-weight: 700; padding: 4px 12px;
+      border-radius: 50px; letter-spacing: 1px;
+    }
+    .tool-tag.blue { background: rgba(79,142,255,0.1); color: var(--accent2); }
+
+    /* ─── QUIZ SECTION ─── */
+    .quiz-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 80px 20px;
+    }
+    .quiz-wrap { max-width: 700px; margin: 0 auto; }
+    .quiz-header { margin-bottom: 40px; }
+
+    #quiz-container { position: relative; }
+    .quiz-progress {
+      display: flex; gap: 8px; margin-bottom: 32px;
+    }
+    .progress-dot {
+      height: 4px; flex: 1; border-radius: 2px;
+      background: var(--border); transition: background .4s;
+    }
+    .progress-dot.active { background: var(--accent); }
+    .progress-dot.done { background: rgba(0,229,160,0.4); }
+
+    .question-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px;
+      animation: fadeUp .4s ease both;
+    }
+    .question-num { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .question-text { font-family: var(--font-head); font-size: 22px; font-weight: 700; margin-bottom: 28px; line-height: 1.3; }
+    .answers { display: flex; flex-direction: column; gap: 12px; }
+    .answer-btn {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; text-align: left;
+      color: var(--text); font-size: 15px; cursor: pointer;
+      transition: all .2s; font-family: var(--font-body);
+    }
+    .answer-btn:hover { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.3); }
+    .answer-btn.correct { background: rgba(0,229,160,0.15); border-color: var(--accent); color: var(--accent); }
+    .answer-btn.wrong { background: rgba(255,80,80,0.1); border-color: rgba(255,80,80,0.4); color: #ff7070; }
+    .answer-btn:disabled { cursor: default; }
+
+    .explanation {
+      margin-top: 20px; padding: 16px 20px;
+      background: rgba(79,142,255,0.07); border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0; font-size: 14px; color: var(--muted);
+      display: none;
+    }
+    .next-btn {
+      margin-top: 24px; background: var(--accent); color: #0a0f1e;
+      border: none; padding: 13px 28px; border-radius: 50px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-body); display: none;
+      transition: opacity .2s;
+    }
+    .next-btn:hover { opacity: .85; }
+
+    /* Score */
+    .score-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px 40px; text-align: center;
+      display: none; animation: fadeUp .5s ease both;
+    }
+    .score-num { font-family: var(--font-head); font-size: 72px; font-weight: 800; }
+    .score-label { color: var(--muted); margin-bottom: 32px; font-size: 18px; }
+    .score-comment { color: var(--text); font-size: 17px; margin-bottom: 32px; line-height: 1.6; }
+    .restart-btn {
+      background: transparent; color: var(--accent); border: 1px solid var(--accent);
+      padding: 12px 28px; border-radius: 50px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: var(--font-body); transition: all .2s;
+    }
+    .restart-btn:hover { background: rgba(0,229,160,0.1); }
+
+    /* ─── SIMULATEUR BUDGET ─── */
+    .sim-section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+    .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
+    @media(max-width:700px) { .sim-grid { grid-template-columns: 1fr; } }
+
+    .sim-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px;
+    }
+    .sim-card h3 { font-family: var(--font-head); font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+    .form-group input {
+      width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; color: var(--text); font-size: 16px;
+      font-family: var(--font-body); outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: rgba(0,229,160,0.4); }
+
+    .result-box {
+      background: var(--bg); border-radius: 16px; padding: 28px;
+    }
+    .result-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .result-item:last-child { border-bottom: none; }
+    .result-item .label { color: var(--muted); font-size: 14px; }
+    .result-item .value { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+    .value.green { color: var(--accent); }
+    .value.red { color: #ff7070; }
+    .value.blue { color: var(--accent2); }
+    .result-bar { height: 8px; background: var(--border); border-radius: 4px; margin: 20px 0 8px; overflow: hidden; }
+    .result-bar-fill { height: 100%; border-radius: 4px; transition: width .8s ease; background: var(--accent); }
+    .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border); padding: 40px 20px;
+      text-align: center; color: var(--muted); font-size: 13px;
+    }
+    footer a { color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 16px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:600px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .hero-stats { gap: 24px; }
+      .stat-num { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="logo">Finance<span>IQ</span></div>
+  <div class="nav-links">
+    <a href="#outils">Outils</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#budget">Budget</a>
+    <a href="en/index.html">🇬🇧 EN</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">Tester gratuitement</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Entièrement gratuit · Aucune inscription</div>
+  <h1>Maîtrisez vos<br><em>finances</em> avec<br>des <span class="blue">outils simples</span></h1>
+  <p class="hero-sub">Simulateurs, quiz et calculateurs pour prendre les bonnes décisions financières. En 2 minutes, savoir où vous en êtes.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">Faire le quiz →</button>
+    <button class="btn-secondary" onclick="document.getElementById('budget').scrollIntoView({behavior:'smooth'})">Simuler mon budget</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num" id="counter1">0</div><div class="stat-label">Simulations réalisées</div></div>
+    <div class="stat"><div class="stat-num" id="counter2">0</div><div class="stat-label">Utilisateurs actifs</div></div>
+    <div class="stat"><div class="stat-num" id="counter3">0</div><div class="stat-label">Questions quiz</div></div>
+  </div>
+</section>
+
+<!-- PUBLICITÉ BANNER (AdSense ici) -->
+<div style="padding: 0 20px 40px; max-width:740px; margin:0 auto;">
+  <div class="ad-banner">
+    <div style="font-size:11px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Publicité</div>
+    <div class="ad-inner">
+      <!-- AdSense code ici -->
+      <span style="font-size:13px;">Espace publicitaire 728×90</span>
+    </div>
+  </div>
+</div>
+
+<!-- OUTILS -->
+<section class="section" id="outils">
+  <div class="section-label">Nos outils</div>
+  <h2 class="section-title">Tout ce dont vous avez besoin</h2>
+  <p class="section-sub">Des calculateurs pratiques pour gérer votre argent au quotidien.</p>
+  <div class="tools-grid">
+    <a class="tool-card" href="#budget">
+      <span class="tool-icon">💰</span>
+      <div class="tool-title">Simulateur de budget</div>
+      <div class="tool-desc">Visualisez où part votre argent chaque mois et optimisez vos dépenses.</div>
+      <span class="tool-tag">GRATUIT</span>
+    </a>
+    <a class="tool-card" href="calculateur.html">
+      <span class="tool-icon">🏠</span>
+      <div class="tool-title">Calculateur de crédit</div>
+      <div class="tool-desc">Simulez vos mensualités de crédit immobilier ou consommation en quelques secondes.</div>
+      <span class="tool-tag blue">POPULAIRE</span>
+    </a>
+    <a class="tool-card" href="#quiz">
+      <span class="tool-icon">🧠</span>
+      <div class="tool-title">Quiz Santé Financière</div>
+      <div class="tool-desc">Testez vos connaissances et découvrez votre niveau de culture financière.</div>
+      <span class="tool-tag">15 QUESTIONS</span>
+    </a>
+    <a class="tool-card" href="loyer-vs-achat.html">
+      <span class="tool-icon">📊</span>
+      <div class="tool-title">Loyer vs Achat</div>
+      <div class="tool-desc">Vaut-il mieux louer ou acheter ? Obtenez la réponse personnalisée pour votre situation.</div>
+      <span class="tool-tag blue">BIENTÔT</span>
+    </a>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<div class="quiz-section" id="quiz">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <div class="section-label">Quiz interactif</div>
+      <h2 class="section-title">Quelle est votre santé financière ?</h2>
+      <p class="section-sub" style="color:var(--muted);font-size:17px;">8 questions pour évaluer vos connaissances et habitudes financières.</p>
+    </div>
+
+    <!-- Pub entre quiz header et questions -->
+    <div class="ad-banner" style="margin-bottom:32px;">
+      <div style="font-size:11px;margin-bottom:6px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Publicité</div>
+      <div class="ad-inner" style="min-height:60px;"><span style="font-size:13px;">Espace 468×60</span></div>
+    </div>
+
+    <div id="quiz-container">
+      <div class="quiz-progress" id="progress-bar"></div>
+      <div class="question-card" id="question-card"></div>
+      <div class="score-card" id="score-card"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIMULATEUR BUDGET -->
+<section class="sim-section" id="budget">
+  <div class="section-label">Outil pratique</div>
+  <h2 class="section-title">Simulateur de budget</h2>
+  <p class="section-sub">Entrez vos revenus et dépenses pour visualiser votre situation financière en temps réel.</p>
+
+  <div class="sim-grid">
+    <div class="sim-card">
+      <h3>📥 Vos revenus & dépenses</h3>
+      <div class="form-group">
+        <label>Salaire net mensuel (€)</label>
+        <input type="number" id="revenu" placeholder="2500" oninput="calculerBudget()">
+      </div>
+      <div class="form-group">
+        <label>Loyer / Remboursement (€)</label>
+        <input type="number" id="loyer" placeholder="800" oninput="calculerBudget()">
+      </div>
+      <div class="form-group">
+        <label>Alimentation (€)</label>
+        <input type="number" id="alim" placeholder="400" oninput="calculerBudget()">
+      </div>
+      <div class="form-group">
+        <label>Transport (€)</label>
+        <input type="number" id="transport" placeholder="150" oninput="calculerBudget()">
+      </div>
+      <div class="form-group">
+        <label>Autres dépenses (€)</label>
+        <input type="number" id="autres" placeholder="300" oninput="calculerBudget()">
+      </div>
+    </div>
+
+    <div class="sim-card">
+      <h3>📊 Votre bilan mensuel</h3>
+      <div class="result-box">
+        <div class="result-item">
+          <span class="label">Revenus totaux</span>
+          <span class="value blue" id="res-revenu">—</span>
+        </div>
+        <div class="result-item">
+          <span class="label">Dépenses totales</span>
+          <span class="value red" id="res-depenses">—</span>
+        </div>
+        <div class="result-item">
+          <span class="label">Capacité d'épargne</span>
+          <span class="value green" id="res-epargne">—</span>
+        </div>
+        <div class="result-item">
+          <span class="label">Taux d'épargne</span>
+          <span class="value" id="res-taux">—</span>
+        </div>
+      </div>
+      <div class="result-bar"><div class="result-bar-fill" id="bar-fill" style="width:0%"></div></div>
+      <div class="bar-label"><span>Dépenses</span><span>Épargne</span></div>
+      <p id="budget-conseil" style="margin-top:20px;font-size:14px;color:var(--muted);line-height:1.6;"></p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="#">Mentions légales</a>
+    <a href="#">Confidentialité</a>
+    <a href="#">Contact</a>
+    <a href="en/index.html">English version</a>
+  </div>
+  <p>© 2025 FinanceIQ · Tous droits réservés · Outil éducatif, pas de conseil financier</p>
+</footer>
+
+<script>
+// ─── COMPTEURS ANIMÉS ───
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const step = Math.ceil(target / 60);
+  const timer = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = start.toLocaleString() + suffix;
+    if (start >= target) clearInterval(timer);
+  }, 25);
+}
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCounter(document.getElementById('counter1'), 12847, '');
+    animateCounter(document.getElementById('counter2'), 3241, '');
+    animateCounter(document.getElementById('counter3'), 50, '+');
+  }, 600);
+});
+
+// ─── QUIZ DATA ───
+const questions = [
+  {
+    q: "Quelle est la règle d'épargne recommandée par les experts financiers ?",
+    answers: ["Épargner 5% de ses revenus", "Épargner au moins 10-20% de ses revenus", "Épargner uniquement si on a un surplus", "Mettre tout en Livret A"],
+    correct: 1,
+    explication: "La règle 50/30/20 recommande d'allouer 20% de ses revenus à l'épargne. Même 10% représente déjà un bon point de départ pour construire un patrimoine sur le long terme."
+  },
+  {
+    q: "Qu'est-ce que l'effet des intérêts composés ?",
+    answers: ["Des intérêts payés deux fois", "Des intérêts qui génèrent eux-mêmes des intérêts", "Un type de crédit bancaire", "Une taxe sur l'épargne"],
+    correct: 1,
+    explication: "L'intérêt composé, c'est quand vos gains génèrent eux-mêmes des gains. Einstein l'appelait 'la 8e merveille du monde'. Avec 1000€ à 5%, vous avez 1628€ après 10 ans sans rien faire."
+  },
+  {
+    q: "Quel est le plafond du Livret A en 2024 ?",
+    answers: ["15 300 €", "22 950 €", "30 000 €", "10 000 €"],
+    correct: 1,
+    explication: "Le plafond du Livret A est de 22 950 € pour un particulier. Il est défiscalisé et garanti par l'État, ce qui en fait un produit d'épargne de base idéal."
+  },
+  {
+    q: "Avant d'investir en bourse, quelle est la première priorité ?",
+    answers: ["Acheter des actions Apple", "Rembourser ses crédits à la consommation", "Constituer une épargne de précaution de 3-6 mois de dépenses", "Ouvrir un PEA"],
+    correct: 2,
+    explication: "Avoir 3 à 6 mois de dépenses en épargne liquide est la base. Cela vous protège des imprévus sans avoir à vendre des investissements au mauvais moment."
+  },
+  {
+    q: "Le taux d'endettement maximum conseillé pour un ménage est de :",
+    answers: ["20% des revenus nets", "33% des revenus nets", "50% des revenus nets", "Il n'y a pas de limite"],
+    correct: 1,
+    explication: "La règle des 33% est la limite traditionnelle des banques. Au-delà, le reste à vivre devient insuffisant et le risque de surendettement augmente fortement."
+  },
+  {
+    q: "Quelle est la différence entre un PEA et une assurance-vie ?",
+    answers: ["Aucune, ce sont les mêmes produits", "Le PEA investit uniquement en actions européennes, l'AV offre plus de flexibilité", "L'AV est plus rentable que le PEA", "Le PEA est réservé aux entreprises"],
+    correct: 1,
+    explication: "Le PEA (Plan d'Épargne en Actions) est limité aux actions européennes mais offre une exonération d'impôt après 5 ans. L'assurance-vie est plus polyvalente avec des fonds euros sécurisés."
+  },
+  {
+    q: "En cas de faillite de votre banque, vos dépôts sont garantis jusqu'à :",
+    answers: ["10 000 €", "50 000 €", "100 000 €", "Aucune garantie"],
+    correct: 2,
+    explication: "Le Fonds de Garantie des Dépôts (FGDR) protège vos dépôts jusqu'à 100 000 € par établissement bancaire. En cas de faillite, vous récupérez cette somme sous 7 jours ouvrables."
+  },
+  {
+    q: "Quelle est la meilleure stratégie pour investir en bourse sur le long terme ?",
+    answers: ["Acheter quand ça monte, vendre quand ça baisse", "Investir régulièrement une somme fixe (DCA)", "Tout miser sur une seule action prometteuse", "Attendre le bon moment pour tout investir"],
+    correct: 1,
+    explication: "Le Dollar Cost Averaging (DCA) — investir la même somme régulièrement — est statistiquement plus efficace que de 'timer' le marché. Même les professionnels n'y arrivent pas de façon constante."
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+
+function buildProgressBar() {
+  const pb = document.getElementById('progress-bar');
+  pb.innerHTML = '';
+  questions.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+    pb.appendChild(dot);
+  });
+}
+
+function showQuestion() {
+  const qc = document.getElementById('question-card');
+  const sc = document.getElementById('score-card');
+  qc.style.display = 'block';
+  sc.style.display = 'none';
+  buildProgressBar();
+
+  const q = questions[currentQ];
+  qc.innerHTML = `
+    <div class="question-num">Question ${currentQ + 1} / ${questions.length}</div>
+    <div class="question-text">${q.q}</div>
+    <div class="answers">
+      ${q.answers.map((a, i) => `<button class="answer-btn" onclick="selectAnswer(${i})">${a}</button>`).join('')}
+    </div>
+    <div class="explanation" id="explication">${q.explication}</div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">
+      ${currentQ < questions.length - 1 ? 'Question suivante →' : 'Voir mon score →'}
+    </button>
+  `;
+}
+
+function selectAnswer(idx) {
+  const q = questions[currentQ];
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
+  if (idx !== q.correct) btns[q.correct].classList.add('correct');
+  if (idx === q.correct) score++;
+  document.getElementById('explication').style.display = 'block';
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) showScore();
+  else showQuestion();
+}
+
+function showScore() {
+  document.getElementById('question-card').style.display = 'none';
+  document.getElementById('progress-bar').innerHTML = '';
+  const sc = document.getElementById('score-card');
+  sc.style.display = 'block';
+  const pct = Math.round((score / questions.length) * 100);
+  let color = score >= 6 ? 'var(--accent)' : score >= 4 ? 'var(--accent2)' : '#ff7070';
+  let comment = score >= 7 ? '🏆 Excellent ! Vous maîtrisez très bien les bases de la finance personnelle. Continuez à faire fructifier vos connaissances !' :
+                score >= 5 ? '👍 Pas mal ! Vous avez de bonnes bases. Quelques notions à approfondir, notamment sur les produits d\'épargne et d\'investissement.' :
+                '📚 Des progrès à faire ! Mais pas d\'inquiétude — nos outils sont là pour vous aider à progresser. Recommencez le quiz après avoir lu nos articles.';
+  sc.innerHTML = `
+    <div class="score-num" style="color:${color}">${score}/${questions.length}</div>
+    <div class="score-label">${pct}% de bonnes réponses</div>
+    <div class="score-comment">${comment}</div>
+    <button class="restart-btn" onclick="restartQuiz()">↺ Recommencer</button>
+  `;
+}
+
+function restartQuiz() { currentQ = 0; score = 0; showQuestion(); }
+
+// ─── SIMULATEUR BUDGET ───
+function calculerBudget() {
+  const rev = parseFloat(document.getElementById('revenu').value) || 0;
+  const loyer = parseFloat(document.getElementById('loyer').value) || 0;
+  const alim = parseFloat(document.getElementById('alim').value) || 0;
+  const transport = parseFloat(document.getElementById('transport').value) || 0;
+  const autres = parseFloat(document.getElementById('autres').value) || 0;
+
+  const depenses = loyer + alim + transport + autres;
+  const epargne = rev - depenses;
+  const taux = rev > 0 ? Math.round((epargne / rev) * 100) : 0;
+
+  const fmt = n => n.toLocaleString('fr-FR') + ' €';
+
+  document.getElementById('res-revenu').textContent = rev > 0 ? fmt(rev) : '—';
+  document.getElementById('res-depenses').textContent = depenses > 0 ? fmt(depenses) : '—';
+  document.getElementById('res-epargne').textContent = rev > 0 ? fmt(epargne) : '—';
+  document.getElementById('res-epargne').className = 'value ' + (epargne >= 0 ? 'green' : 'red');
+  document.getElementById('res-taux').textContent = rev > 0 ? taux + '%' : '—';
+
+  if (rev > 0) {
+    const pctDepenses = Math.min(100, Math.round((depenses / rev) * 100));
+    document.getElementById('bar-fill').style.width = pctDepenses + '%';
+    document.getElementById('bar-fill').style.background = epargne >= 0 ? 'var(--accent)' : '#ff7070';
+
+    let conseil = '';
+    if (epargne < 0) conseil = '⚠️ Vos dépenses dépassent vos revenus. Il faut identifier les postes à réduire en priorité.';
+    else if (taux < 10) conseil = '💡 Votre taux d\'épargne est faible. Essayez de vous approcher de 10-20% pour construire un matelas de sécurité.';
+    else if (taux < 20) conseil = '✅ Bon taux d\'épargne ! Pensez à diversifier : Livret A, PEA, ou assurance-vie selon vos objectifs.';
+    else conseil = '🏆 Excellent taux d\'épargne ! Vous êtes bien positionné(e) pour investir et faire croître votre patrimoine.';
+    document.getElementById('budget-conseil').textContent = conseil;
+  }
+}
+
+// Init quiz
+showQuestion();
+</script>
+</body>
+</html>
