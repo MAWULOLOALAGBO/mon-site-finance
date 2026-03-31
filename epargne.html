@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulateur Épargne & Investissement — FinanceIQ</title>
+  <meta name="description" content="Simulez la croissance de votre épargne sur le long terme. Calculez combien vous aurez dans 10, 20 ou 30 ans grâce aux intérêts composés. Gratuit et instantané.">
+  <meta name="keywords" content="simulateur épargne, calculateur investissement, intérêts composés, combien épargner, projection patrimoine, PEA simulation">
+
+  <!-- AdSense -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:#0a0f1e; --surface:#111827; --card:#161f35;
+      --accent:#00e5a0; --accent2:#4f8eff; --warn:#f5a623; --danger:#ff6b6b;
+      --text:#f0f4ff; --muted:#7a8aaa; --border:rgba(255,255,255,0.07);
+      --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;overflow-x:hidden}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(10,15,30,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .logo{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;text-decoration:none}
+    .logo span{color:var(--text)}
+    .nav-links{display:flex;gap:28px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+    @media(max-width:700px){nav{padding:16px 20px}.nav-links{display:none}}
+
+    .page-hero{padding:120px 20px 56px;text-align:center;position:relative}
+    .page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(0,229,160,0.08) 0%,transparent 70%);pointer-events:none}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);border-radius:50px;padding:6px 16px;font-size:13px;color:var(--accent);margin-bottom:24px}
+    h1{font-family:var(--font-head);font-size:clamp(36px,6vw,64px);font-weight:800;letter-spacing:-1.5px;margin-bottom:16px}
+    h1 em{font-style:normal;color:var(--accent)}
+    .hero-sub{color:var(--muted);font-size:18px;max-width:540px;margin:0 auto}
+
+    .main{max-width:1100px;margin:0 auto;padding:48px 20px 80px}
+
+    /* SCÉNARIOS RAPIDES */
+    .scenarios{display:flex;gap:12px;margin-bottom:36px;flex-wrap:wrap}
+    .scenario-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:50px;padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);font-family:var(--font-body);transition:all .2s}
+    .scenario-btn:hover{border-color:rgba(0,229,160,0.4);color:var(--accent)}
+    .scenario-btn.active{background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.4);color:var(--accent)}
+
+    /* GRILLE */
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    @media(max-width:800px){.grid2{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px}
+    .card h2{font-family:var(--font-head);font-size:20px;font-weight:700;margin-bottom:28px}
+
+    /* SLIDERS */
+    .form-group{margin-bottom:22px}
+    .form-group label{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:500}
+    .form-group label span{font-size:15px;color:var(--text);font-weight:700}
+    input[type="range"]{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid var(--bg);cursor:pointer;box-shadow:0 0 0 2px var(--accent)}
+    .range-limits{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px}
+
+    /* TOGGLE MODE */
+    .mode-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:28px}
+    .mode-btn{flex:1;padding:12px;text-align:center;background:transparent;border:none;color:var(--muted);font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+    .mode-btn.active{background:rgba(0,229,160,0.1);color:var(--accent);font-weight:700}
+
+    /* RÉSULTAT PRINCIPAL */
+    .result-hero{background:linear-gradient(135deg,rgba(0,229,160,0.12),rgba(0,229,160,0.04));border:1px solid rgba(0,229,160,0.2);border-radius:16px;padding:32px;text-align:center;margin-bottom:20px}
+    .result-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+    .result-big{font-family:var(--font-head);font-size:clamp(36px,6vw,60px);font-weight:800;color:var(--accent);line-height:1}
+    .result-sub{font-size:14px;color:var(--muted);margin-top:8px}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+    @media(max-width:500px){.stats-grid{grid-template-columns:1fr 1fr}}
+    .stat-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+    .stat-box .sv{font-family:var(--font-head);font-size:18px;font-weight:700}
+    .stat-box .sl{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
+    .sv.green{color:var(--accent)} .sv.blue{color:var(--accent2)} .sv.warn{color:var(--warn)}
+
+    /* GRAPHIQUE */
+    .chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;margin-top:28px}
+    .chart-wrap h3{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:6px}
+    .chart-wrap p{font-size:13px;color:var(--muted);margin-bottom:20px}
+    canvas#chart{width:100%}
+
+    /* MILESTONES */
+    .milestones{margin-top:28px}
+    .milestones h3{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:16px}
+    .milestone-list{display:flex;flex-direction:column;gap:10px}
+    .milestone{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px}
+    .milestone-year{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--accent2);min-width:60px}
+    .milestone-info{flex:1}
+    .milestone-val{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--accent)}
+    .milestone-detail{font-size:13px;color:var(--muted)}
+    .milestone-mult{background:rgba(0,229,160,0.1);color:var(--accent);font-size:12px;font-weight:700;padding:4px 10px;border-radius:50px}
+
+    /* CONSEIL */
+    .conseil-box{background:rgba(79,142,255,0.07);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;padding:16px 20px;font-size:14px;color:var(--muted);line-height:1.7;margin-top:20px}
+    .conseil-box strong{color:var(--text)}
+
+    /* AD */
+    .ad-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;margin:28px 0}
+    .ad-inner{min-height:90px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);border-radius:8px}
+
+    /* COMPARAISON PRODUITS */
+    .produits-section{margin-top:48px}
+    .produits-section h2{font-family:var(--font-head);font-size:24px;font-weight:700;margin-bottom:8px}
+    .produits-section p{color:var(--muted);font-size:15px;margin-bottom:24px}
+    .produits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .produit-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:all .25s}
+    .produit-card:hover,.produit-card.selected{border-color:rgba(0,229,160,0.4);background:rgba(0,229,160,0.05)}
+    .produit-icon{font-size:28px;margin-bottom:12px}
+    .produit-name{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:4px}
+    .produit-taux{font-size:22px;font-weight:800;font-family:var(--font-head)}
+    .produit-taux.low{color:var(--warn)} .produit-taux.mid{color:var(--accent2)} .produit-taux.high{color:var(--accent)}
+    .produit-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+    .produit-result{font-size:13px;font-weight:700;margin-top:10px;color:var(--accent)}
+
+    /* FAQ */
+    .faq-section{background:var(--surface);border-top:1px solid var(--border);padding:60px 20px;margin-top:0}
+    .faq-inner{max-width:800px;margin:0 auto}
+    .faq-inner h2{font-family:var(--font-head);font-size:26px;font-weight:700;margin-bottom:8px}
+    .faq-sub{color:var(--muted);font-size:16px;margin-bottom:32px}
+    .faq-item{border-bottom:1px solid var(--border);padding:20px 0;cursor:pointer}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:500;gap:20px}
+    .faq-q span{color:var(--accent);font-size:20px;transition:transform .3s;flex-shrink:0}
+    .faq-a{color:var(--muted);font-size:14px;line-height:1.75;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+    .faq-item.open .faq-a{max-height:300px;padding-top:12px}
+    .faq-item.open .faq-q span{transform:rotate(45deg)}
+
+    footer{border-top:1px solid var(--border);padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
+    .footer-links{display:flex;gap:24px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+    .footer-links a{color:var(--muted);text-decoration:none}
+    .footer-links a:hover{color:var(--accent)}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Finance<span>IQ</span></a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="calculateur.html">Crédit</a>
+    <a href="loyer-vs-achat.html">Loyer vs Achat</a>
+    <a href="epargne.html" class="active">Épargne</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-badge">📈 Simulation long terme · Intérêts composés</div>
+  <h1>Simulateur d'<em>épargne</em></h1>
+  <p class="hero-sub">Combien aurez-vous dans 10, 20 ou 30 ans ? Visualisez la puissance des intérêts composés selon votre rythme d'épargne.</p>
+</div>
+
+<div class="main">
+
+  <!-- SCÉNARIOS RAPIDES -->
+  <div style="margin-bottom:12px;font-size:13px;color:var(--muted)">Scénarios prédéfinis :</div>
+  <div class="scenarios">
+    <button class="scenario-btn" onclick="loadScenario('prudent')">🛡️ Épargnant prudent</button>
+    <button class="scenario-btn" onclick="loadScenario('regulier')">📅 Épargnant régulier</button>
+    <button class="scenario-btn" onclick="loadScenario('ambitieux')">🚀 Investisseur ambitieux</button>
+    <button class="scenario-btn" onclick="loadScenario('retraite')">🏖️ Préparer la retraite</button>
+    <button class="scenario-btn" onclick="loadScenario('etudes')">🎓 Études des enfants</button>
+  </div>
+
+  <div class="grid2">
+    <!-- PARAMÈTRES -->
+    <div class="card">
+      <h2>⚙️ Paramètres</h2>
+
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btn-mensuel" onclick="setMode('mensuel')">Versement mensuel</button>
+        <button class="mode-btn" id="btn-initial" onclick="setMode('initial')">Capital initial</button>
+        <button class="mode-btn" id="btn-both" onclick="setMode('both')">Les deux</button>
+      </div>
+
+      <div id="bloc-initial" style="display:none">
+        <div class="form-group">
+          <label>Capital initial <span id="lbl-capital">5 000 €</span></label>
+          <input type="range" id="capital" min="0" max="100000" step="500" value="5000" oninput="update()">
+          <div class="range-limits"><span>0 €</span><span>100 000 €</span></div>
+        </div>
+      </div>
+
+      <div id="bloc-mensuel">
+        <div class="form-group">
+          <label>Versement mensuel <span id="lbl-mensuel">200 €</span></label>
+          <input type="range" id="versement" min="0" max="3000" step="10" value="200" oninput="update()">
+          <div class="range-limits"><span>0 €</span><span>3 000 €</span></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Taux de rendement annuel <span id="lbl-taux">5.0 %</span></label>
+        <input type="range" id="taux" min="0.5" max="12" step="0.1" value="5" oninput="update()">
+        <div class="range-limits"><span>0.5%</span><span>12%</span></div>
+      </div>
+
+      <div class="form-group">
+        <label>Durée de l'investissement <span id="lbl-duree">20 ans</span></label>
+        <input type="range" id="duree" min="1" max="40" step="1" value="20" oninput="update()">
+        <div class="range-limits"><span>1 an</span><span>40 ans</span></div>
+      </div>
+
+      <div class="form-group">
+        <label>Inflation annuelle estimée <span id="lbl-inflation">2.0 %</span></label>
+        <input type="range" id="inflation" min="0" max="5" step="0.1" value="2" oninput="update()">
+        <div class="range-limits"><span>0%</span><span>5%</span></div>
+      </div>
+
+      <div class="conseil-box" id="conseil-box">Ajustez les paramètres pour obtenir une analyse personnalisée.</div>
+    </div>
+
+    <!-- RÉSULTATS -->
+    <div>
+      <div class="result-hero">
+        <div class="result-label">Capital final estimé</div>
+        <div class="result-big" id="res-final">— €</div>
+        <div class="result-sub" id="res-reel">En euros constants (hors inflation) : — €</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="sv blue" id="st-verse">—</div>
+          <div class="sl">Total versé</div>
+        </div>
+        <div class="stat-box">
+          <div class="sv green" id="st-interets">—</div>
+          <div class="sl">Intérêts générés</div>
+        </div>
+        <div class="stat-box">
+          <div class="sv warn" id="st-mult">—</div>
+          <div class="sl">Multiplication du capital</div>
+        </div>
+      </div>
+
+      <!-- BARRE CAPITAL VS INTÉRÊTS -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:10px">
+          <span>Capital versé</span><span>Intérêts composés</span>
+        </div>
+        <div style="height:12px;background:var(--border);border-radius:6px;overflow:hidden;display:flex">
+          <div id="bar-capital" style="height:100%;background:var(--accent2);border-radius:6px 0 0 6px;transition:width .8s ease;width:50%"></div>
+          <div id="bar-interets" style="height:100%;background:var(--accent);border-radius:0 6px 6px 0;transition:width .8s ease;width:50%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px">
+          <span style="color:var(--accent2)" id="bar-pct-capital">50%</span>
+          <span style="color:var(--accent)" id="bar-pct-interets">50%</span>
+        </div>
+      </div>
+
+      <!-- AD -->
+      <div class="ad-block">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Publicité</div>
+        <div class="ad-inner"><span style="font-size:13px;color:var(--muted)">300×250</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAPHIQUE -->
+  <div class="chart-wrap">
+    <h3>📈 Évolution de votre épargne</h3>
+    <p>Capital versé (bleu) vs capital total avec intérêts (vert) — année par année</p>
+    <canvas id="chart" height="300"></canvas>
+  </div>
+
+  <!-- AD BANNER -->
+  <div class="ad-block" style="max-width:740px;margin:28px auto">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Publicité</div>
+    <div class="ad-inner"><span style="font-size:13px;color:var(--muted)">728×90</span></div>
+  </div>
+
+  <!-- MILESTONES -->
+  <div class="milestones">
+    <h3>🏆 Étapes clés de votre épargne</h3>
+    <div class="milestone-list" id="milestones"></div>
+  </div>
+
+  <!-- COMPARAISON PRODUITS -->
+  <div class="produits-section">
+    <h2>📊 Quel produit pour quel objectif ?</h2>
+    <p>Cliquez sur un produit pour simuler son rendement avec vos paramètres actuels.</p>
+    <div class="produits-grid" id="produits-grid"></div>
+  </div>
+
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-inner">
+    <h2>Questions fréquentes sur l'épargne</h2>
+    <p class="faq-sub">Tout ce qu'il faut savoir avant de commencer à épargner.</p>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">Combien faut-il épargner par mois pour devenir millionnaire ? <span>+</span></div>
+      <div class="faq-a">Avec un rendement de 7% par an (rendement historique moyen des marchés actions), il faut épargner environ 500€/mois pendant 30 ans pour atteindre 1 million d'euros. Avec 1 000€/mois, vous y arrivez en 23 ans. La clé : commencer tôt. 200€/mois pendant 40 ans à 7% donnent environ 525 000 €.</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">Quelle est la règle des 72 ? <span>+</span></div>
+      <div class="faq-a">La règle des 72 est une formule simple pour estimer le temps nécessaire pour doubler votre capital : divisez 72 par le taux annuel. À 4%, votre capital double en 72/4 = 18 ans. À 6%, en 12 ans. À 9%, en 8 ans. C'est une approximation pratique pour comparer rapidement différents placements.</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">Épargne mensuelle ou capital initial : qu'est-ce qui est plus efficace ? <span>+</span></div>
+      <div class="faq-a">Les deux ont leur place. Un capital initial travaille immédiatement et maximise l'effet des intérêts composés sur la durée. Les versements réguliers permettent une discipline d'épargne et lissent le risque (on n'investit pas tout au mauvais moment). Idéalement : commencez avec un capital de départ et maintenez des versements réguliers.</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">Quel rendement peut-on espérer réalistement ? <span>+</span></div>
+      <div class="faq-a">Livret A : 3% (2024). Fonds euros assurance-vie : 2,5-4%. Immobilier locatif net : 3-6%. PEA investi en ETF monde : 6-9% sur le long terme (historique). Actions individuelles : très variable. Plus le rendement est élevé, plus le risque l'est aussi. Pour un simulateur, 5-7% est une hypothèse raisonnable pour un portefeuille diversifié.</div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">L'inflation mange-t-elle vraiment mes économies ? <span>+</span></div>
+      <div class="faq-a">Oui, et de façon significative. Avec 2% d'inflation par an, 100 000 € ont le pouvoir d'achat de 67 000 € actuels après 20 ans. C'est pourquoi garder tout son argent sur un Livret A à 3% quand l'inflation est à 3% ne vous enrichit pas vraiment. Notre simulateur affiche le capital "en euros constants" pour tenir compte de cet effet.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Accueil</a>
+    <a href="calculateur.html">Calculateur crédit</a>
+    <a href="loyer-vs-achat.html">Loyer vs Achat</a>
+    <a href="#">Mentions légales</a>
+  </div>
+  <p>© 2025 FinanceIQ · Simulation indicative · Les rendements passés ne préjugent pas des rendements futurs</p>
+</footer>
+
+<script>
+const fmt = n => Math.round(n).toLocaleString('fr-FR') + ' €';
+const fmtK = n => n >= 1000000 ? (n/1000000).toFixed(2) + ' M€' : n >= 1000 ? Math.round(n/1000) + ' k€' : Math.round(n) + ' €';
+
+let mode = 'mensuel';
+
+const produits = [
+  { icon:'🏦', name:'Livret A', taux:3.0,  classe:'low', desc:'Sécurisé, liquide, défiscalisé. Plafond 22 950€.' },
+  { icon:'📄', name:'Fonds euros', taux:3.5, classe:'low', desc:'Assurance-vie sécurisée. Capital garanti.' },
+  { icon:'📊', name:'ETF Monde', taux:7.0,  classe:'high', desc:'PEA ou CTO. Diversifié, long terme recommandé.' },
+  { icon:'🏠', name:'SCPI', taux:5.0,      classe:'mid', desc:'Immobilier sans gestion. Rendement régulier.' },
+  { icon:'💼', name:'Actions', taux:9.0,   classe:'high', desc:'Potentiel élevé, risque élevé. Long terme.' },
+  { icon:'🔗', name:'Obligations', taux:4.0, classe:'mid', desc:'Revenus fixes, moins volatil que les actions.' },
+];
+
+let selectedProduit = null;
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-mensuel').classList.toggle('active', m === 'mensuel' || m === 'both');
+  document.getElementById('btn-initial').classList.toggle('active', m === 'initial' || m === 'both');
+  document.getElementById('btn-both').classList.toggle('active', m === 'both');
+  document.getElementById('bloc-mensuel').style.display = (m === 'initial') ? 'none' : 'block';
+  document.getElementById('bloc-initial').style.display = (m === 'mensuel') ? 'none' : 'block';
+  update();
+}
+
+function loadScenario(s) {
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const scenarios = {
+    prudent:   { capital:10000, versement:100,  taux:3.0,  duree:20, inflation:2.0, mode:'both' },
+    regulier:  { capital:0,     versement:200,  taux:5.0,  duree:20, inflation:2.0, mode:'mensuel' },
+    ambitieux: { capital:5000,  versement:500,  taux:8.0,  duree:25, inflation:2.0, mode:'both' },
+    retraite:  { capital:10000, versement:300,  taux:6.0,  duree:30, inflation:2.0, mode:'both' },
+    etudes:    { capital:5000,  versement:150,  taux:4.0,  duree:18, inflation:2.0, mode:'both' },
+  };
+  const sc = scenarios[s];
+  setMode(sc.mode);
+  document.getElementById('capital').value = sc.capital;
+  document.getElementById('versement').value = sc.versement;
+  document.getElementById('taux').value = sc.taux;
+  document.getElementById('duree').value = sc.duree;
+  document.getElementById('inflation').value = sc.inflation;
+  update();
+}
+
+function calcProjection(capital, versement, tauxAn, dureeAns) {
+  const r = tauxAn / 100 / 12;
+  const n = dureeAns * 12;
+  let total = capital;
+  const data = [{ year: 0, total: capital, verse: capital }];
+  let totalVerse = capital;
+  for (let m = 1; m <= n; m++) {
+    total = total * (1 + r) + versement;
+    totalVerse += versement;
+    if (m % 12 === 0) data.push({ year: m/12, total, verse: totalVerse });
+  }
+  return { final: total, totalVerse, data };
+}
+
+function update() {
+  const capital   = parseFloat(document.getElementById('capital').value) || 0;
+  const versement = parseFloat(document.getElementById('versement').value) || 0;
+  const taux      = parseFloat(document.getElementById('taux').value);
+  const duree     = parseInt(document.getElementById('duree').value);
+  const inflation = parseFloat(document.getElementById('inflation').value);
+
+  document.getElementById('lbl-capital').textContent = fmt(capital);
+  document.getElementById('lbl-mensuel').textContent = fmt(versement);
+  document.getElementById('lbl-taux').textContent = taux.toFixed(1) + ' %';
+  document.getElementById('lbl-duree').textContent = duree + ' ans';
+  document.getElementById('lbl-inflation').textContent = inflation.toFixed(1) + ' %';
+
+  const cap  = mode === 'mensuel' ? 0 : capital;
+  const vers = mode === 'initial' ? 0 : versement;
+
+  const { final, totalVerse, data } = calcProjection(cap, vers, taux, duree);
+  const interets = final - totalVerse;
+  const mult = totalVerse > 0 ? (final / totalVerse).toFixed(2) : '—';
+  const finalReel = final / Math.pow(1 + inflation/100, duree);
+
+  document.getElementById('res-final').textContent = fmtK(final);
+  document.getElementById('res-reel').textContent = `En euros constants (hors inflation) : ${fmtK(finalReel)}`;
+  document.getElementById('st-verse').textContent = fmtK(totalVerse);
+  document.getElementById('st-interets').textContent = fmtK(interets);
+  document.getElementById('st-mult').textContent = 'x' + mult;
+
+  const pctCapital = final > 0 ? Math.round((totalVerse / final) * 100) : 50;
+  const pctInterets = 100 - pctCapital;
+  document.getElementById('bar-capital').style.width = pctCapital + '%';
+  document.getElementById('bar-interets').style.width = pctInterets + '%';
+  document.getElementById('bar-pct-capital').textContent = pctCapital + '%';
+  document.getElementById('bar-pct-interets').textContent = pctInterets + '%';
+
+  // Conseil
+  let conseil = '';
+  if (pctInterets > 60) conseil = `<strong>🏆 Les intérêts composés travaillent pour vous !</strong> Sur cette durée, ${pctInterets}% de votre capital final vient des intérêts — pas de votre poche. C'est exactement pour ça qu'il faut commencer tôt.`;
+  else if (taux < 3) conseil = `<strong>💡 Rendement faible :</strong> À ${taux}%, vous battez à peine l'inflation. Envisagez de diversifier vers un PEA (ETF) pour viser 5-7% sur le long terme si votre horizon le permet.`;
+  else if (duree < 5) conseil = `<strong>⏱️ Horizon court :</strong> Sur ${duree} ans, les intérêts composés ont peu de temps pour agir. Préférez des placements sécurisés (Livret A, fonds euros) pour cette durée.`;
+  else conseil = `<strong>📈 Bonne trajectoire :</strong> En ${duree} ans à ${taux}%, votre capital est multiplié par ${mult}. Maintenez la régularité — chaque mois compte grâce aux intérêts composés.`;
+  document.getElementById('conseil-box').innerHTML = conseil;
+
+  // Milestones
+  buildMilestones(data, totalVerse, duree);
+
+  // Graphique
+  drawChart(data);
+
+  // Produits
+  buildProduits(cap, vers, duree);
+}
+
+function buildMilestones(data, totalVerse, duree) {
+  const targets = [1, 5, 10, 20, 30, 40].filter(y => y <= duree);
+  const list = document.getElementById('milestones');
+  list.innerHTML = '';
+  targets.forEach(y => {
+    const d = data.find(p => p.year === y);
+    if (!d) return;
+    const interets = d.total - d.verse;
+    const mult = d.verse > 0 ? 'x' + (d.total / d.verse).toFixed(2) : '';
+    list.innerHTML += `
+      <div class="milestone">
+        <div class="milestone-year">${y}a</div>
+        <div class="milestone-info">
+          <div class="milestone-val">${fmtK(d.total)}</div>
+          <div class="milestone-detail">${fmtK(d.verse)} versés · ${fmtK(interets)} d'intérêts</div>
+        </div>
+        <div class="milestone-mult">${mult}</div>
+      </div>`;
+  });
+}
+
+function buildProduits(capital, versement, duree) {
+  const grid = document.getElementById('produits-grid');
+  grid.innerHTML = '';
+  produits.forEach(p => {
+    const { final } = calcProjection(capital, versement, p.taux, duree);
+    grid.innerHTML += `
+      <div class="produit-card ${selectedProduit === p.name ? 'selected' : ''}" onclick="selectProduit('${p.name}', ${p.taux})">
+        <div class="produit-icon">${p.icon}</div>
+        <div class="produit-name">${p.name}</div>
+        <div class="produit-taux ${p.classe}">${p.taux}%/an</div>
+        <div class="produit-desc">${p.desc}</div>
+        <div class="produit-result">→ ${fmtK(final)} en ${duree} ans</div>
+      </div>`;
+  });
+}
+
+function selectProduit(name, taux) {
+  selectedProduit = name;
+  document.getElementById('taux').value = taux;
+  update();
+}
+
+function drawChart(data) {
+  const canvas = document.getElementById('chart');
+  const W = canvas.offsetWidth || 700;
+  const H = 300;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = H * window.devicePixelRatio;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const pad = { t:20, r:20, b:40, l:72 };
+  const cW = W - pad.l - pad.r;
+  const cH = H - pad.t - pad.b;
+
+  const maxV = Math.max(...data.map(d => d.total));
+  const toX = i => pad.l + (i / (data.length - 1)) * cW;
+  const toY = v => pad.t + cH - (v / maxV) * cH;
+
+  // Grille
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + (i / 4) * cH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
+    const val = maxV * (1 - i/4);
+    ctx.fillStyle = 'rgba(122,138,170,0.8)';
+    ctx.font = '11px DM Sans,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(val >= 1000000 ? (val/1000000).toFixed(1)+'M' : val >= 1000 ? Math.round(val/1000)+'k' : Math.round(val), pad.l - 6, y + 4);
+  }
+
+  // Zone remplie capital versé
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0].verse));
+  data.forEach((d, i) => ctx.lineTo(toX(i), toY(d.verse)));
+  ctx.lineTo(toX(data.length-1), pad.t + cH);
+  ctx.lineTo(toX(0), pad.t + cH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(79,142,255,0.15)';
+  ctx.fill();
+
+  // Zone remplie total
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0].total));
+  data.forEach((d, i) => ctx.lineTo(toX(i), toY(d.total)));
+  ctx.lineTo(toX(data.length-1), pad.t + cH);
+  ctx.lineTo(toX(0), pad.t + cH);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,229,160,0.08)';
+  ctx.fill();
+
+  // Ligne capital versé
+  ctx.beginPath();
+  ctx.strokeStyle = '#4f8eff';
+  ctx.lineWidth = 2;
+  data.forEach((d, i) => i === 0 ? ctx.moveTo(toX(i), toY(d.verse)) : ctx.lineTo(toX(i), toY(d.verse)));
+  ctx.stroke();
+
+  // Ligne total
+  ctx.beginPath();
+  ctx.strokeStyle = '#00e5a0';
+  ctx.lineWidth = 2.5;
+  data.forEach((d, i) => i === 0 ? ctx.moveTo(toX(i), toY(d.total)) : ctx.lineTo(toX(i), toY(d.total)));
+  ctx.stroke();
+
+  // Labels axe X
+  ctx.fillStyle = 'rgba(122,138,170,0.8)';
+  ctx.font = '11px DM Sans,sans-serif';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(data.length / 7));
+  data.forEach((d, i) => {
+    if (i % step === 0 || i === data.length - 1) ctx.fillText(d.year + 'a', toX(i), H - pad.b + 16);
+  });
+
+  // Légende
+  ctx.fillStyle = '#4f8eff'; ctx.fillRect(pad.l, H - 12, 14, 3);
+  ctx.fillStyle = 'rgba(122,138,170,0.9)'; ctx.font = '12px DM Sans,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Capital versé', pad.l + 18, H - 8);
+  ctx.fillStyle = '#00e5a0'; ctx.fillRect(pad.l + 120, H - 12, 14, 3);
+  ctx.fillStyle = 'rgba(122,138,170,0.9)';
+  ctx.fillText('Capital total (avec intérêts)', pad.l + 138, H - 8);
+}
+
+// Init
+update();
+window.addEventListener('resize', update);
+</script>
+</body>
+</html>
