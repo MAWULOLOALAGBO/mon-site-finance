@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Finance — Conseils & Guides Gratuits | FinanceIQ</title>
+  <meta name="description" content="Articles, guides et conseils pratiques sur la finance personnelle : épargne, investissement, crédit, budget, retraite. Tout pour mieux gérer votre argent.">
+  <meta name="keywords" content="blog finance, conseils épargne, guide investissement, articles budget, finance personnelle">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0a0f1e; --surface:#111827; --card:#161f35;
+      --accent:#00e5a0; --accent2:#4f8eff;
+      --text:#f0f4ff; --muted:#7a8aaa; --border:rgba(255,255,255,0.07);
+      --font-head:'Syne',sans-serif; --font-body:'DM Sans',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;overflow-x:hidden}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(10,15,30,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .logo{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;text-decoration:none}
+    .logo span{color:var(--text)}
+    .nav-links{display:flex;gap:28px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+    @media(max-width:700px){nav{padding:16px 20px}.nav-links{display:none}}
+
+    .page-hero{padding:120px 20px 60px;text-align:center;position:relative}
+    .page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(79,142,255,0.08) 0%,transparent 70%);pointer-events:none}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,142,255,0.1);border:1px solid rgba(79,142,255,0.25);border-radius:50px;padding:6px 16px;font-size:13px;color:var(--accent2);margin-bottom:24px}
+    h1{font-family:var(--font-head);font-size:clamp(36px,6vw,64px);font-weight:800;letter-spacing:-1.5px;margin-bottom:16px}
+    h1 em{font-style:normal;color:var(--accent2)}
+    .hero-sub{color:var(--muted);font-size:18px;max-width:540px;margin:0 auto}
+
+    .main{max-width:1100px;margin:0 auto;padding:48px 20px 80px}
+
+    /* FILTRES */
+    .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+    .filter-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:50px;padding:8px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);font-family:var(--font-body);transition:all .2s}
+    .filter-btn:hover,.filter-btn.active{background:rgba(79,142,255,0.12);border-color:rgba(79,142,255,0.35);color:var(--accent2)}
+
+    /* ARTICLE FEATURED */
+    .featured{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin-bottom:40px;text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s}
+    .featured:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,0.4)}
+    @media(max-width:700px){.featured{grid-template-columns:1fr}}
+    .featured-img{background:linear-gradient(135deg,#1a2a4a,#0d3b2e);display:flex;align-items:center;justify-content:center;min-height:280px;padding:40px;position:relative;overflow:hidden}
+    .featured-content{padding:40px}
+    .featured-badge{display:inline-block;background:rgba(0,229,160,0.15);color:var(--accent);font-size:11px;font-weight:700;padding:4px 12px;border-radius:50px;letter-spacing:1px;margin-bottom:16px}
+    .featured-title{font-family:var(--font-head);font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;line-height:1.2}
+    .featured-excerpt{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:20px}
+    .featured-meta{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+    .read-more{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;margin-top:20px}
+
+    /* GRILLE ARTICLES */
+    .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+    .article-card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .25s,border-color .25s,box-shadow .25s;display:flex;flex-direction:column}
+    .article-card:hover{transform:translateY(-4px);border-color:rgba(79,142,255,0.3);box-shadow:0 20px 50px rgba(0,0,0,0.3)}
+    .card-img{min-height:180px;display:flex;align-items:center;justify-content:center;padding:28px;position:relative;overflow:hidden}
+    .card-body{padding:24px;flex:1;display:flex;flex-direction:column}
+    .card-tag{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:50px;letter-spacing:1px;margin-bottom:12px}
+    .tag-epargne{background:rgba(0,229,160,0.12);color:var(--accent)}
+    .tag-investissement{background:rgba(79,142,255,0.12);color:var(--accent2)}
+    .tag-credit{background:rgba(245,166,35,0.12);color:#f5a623}
+    .tag-budget{background:rgba(255,107,107,0.12);color:#ff6b6b}
+    .tag-retraite{background:rgba(156,124,255,0.12);color:#9c7cff}
+    .tag-lifestyle{background:rgba(255,183,77,0.12);color:#ffb74d}
+    .card-title{font-family:var(--font-head);font-size:19px;font-weight:700;margin-bottom:10px;line-height:1.3;flex:1}
+    .card-excerpt{color:var(--muted);font-size:14px;line-height:1.55;margin-bottom:16px}
+    .card-meta{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+
+    /* AD */
+    .ad-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;margin:40px 0}
+    .ad-inner{min-height:90px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);border-radius:8px}
+
+    footer{border-top:1px solid var(--border);padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
+    .footer-links{display:flex;gap:24px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+    .footer-links a{color:var(--muted);text-decoration:none}
+    .footer-links a:hover{color:var(--accent)}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Finance<span>IQ</span></a>
+  <div class="nav-links">
+    <a href="index.html">Accueil</a>
+    <a href="calculateur.html">Crédit</a>
+    <a href="epargne.html">Épargne</a>
+    <a href="chatbot.html">Assistant</a>
+    <a href="blog.html" class="active">Blog</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="hero-badge">📚 15 guides rédigés par nos experts</div>
+  <h1>Le blog <em>finance</em> qui vous aide vraiment</h1>
+  <p class="hero-sub">Guides pratiques, conseils concrets et analyses claires pour prendre les meilleures décisions financières.</p>
+</div>
+
+<div class="main">
+
+  <!-- FILTRES -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterArticles('tous', this)">Tous les articles</button>
+    <button class="filter-btn" onclick="filterArticles('epargne', this)">💚 Épargne</button>
+    <button class="filter-btn" onclick="filterArticles('investissement', this)">💙 Investissement</button>
+    <button class="filter-btn" onclick="filterArticles('credit', this)">🟡 Crédit</button>
+    <button class="filter-btn" onclick="filterArticles('budget', this)">🔴 Budget</button>
+    <button class="filter-btn" onclick="filterArticles('retraite', this)">🟣 Retraite</button>
+    <button class="filter-btn" onclick="filterArticles('lifestyle', this)">🟠 Lifestyle</button>
+  </div>
+
+  <!-- ARTICLE VEDETTE -->
+  <a href="articles/regle-50-30-20.html" class="featured">
+    <div class="featured-img">
+      <svg width="240" height="200" viewBox="0 0 240 200">
+        <!-- Graphique camembert 50/30/20 -->
+        <circle cx="120" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="36"/>
+        <!-- 50% arc vert -->
+        <circle cx="120" cy="100" r="80" fill="none" stroke="#00e5a0" stroke-width="36" stroke-dasharray="251 502" stroke-dashoffset="0" transform="rotate(-90 120 100)"/>
+        <!-- 30% arc bleu -->
+        <circle cx="120" cy="100" r="80" fill="none" stroke="#4f8eff" stroke-width="36" stroke-dasharray="150.6 502" stroke-dashoffset="-251" transform="rotate(-90 120 100)"/>
+        <!-- 20% arc orange -->
+        <circle cx="120" cy="100" r="80" fill="none" stroke="#f5a623" stroke-width="36" stroke-dasharray="100.4 502" stroke-dashoffset="-401.6" transform="rotate(-90 120 100)"/>
+        <text x="120" y="92" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="24" font-weight="800">50/30</text>
+        <text x="120" y="116" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="24" font-weight="800">/20</text>
+        <!-- Légendes -->
+        <rect x="10" y="165" width="10" height="10" rx="2" fill="#00e5a0"/>
+        <text x="25" y="175" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="11">Besoins 50%</text>
+        <rect x="95" y="165" width="10" height="10" rx="2" fill="#4f8eff"/>
+        <text x="110" y="175" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="11">Envies 30%</text>
+        <rect x="175" y="165" width="10" height="10" rx="2" fill="#f5a623"/>
+        <text x="190" y="175" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="11">Épargne 20%</text>
+      </svg>
+    </div>
+    <div class="featured-content">
+      <div class="featured-badge">⭐ ARTICLE VEDETTE</div>
+      <div class="featured-title">La règle des 50/30/20 expliquée simplement</div>
+      <div class="featured-excerpt">La méthode de budgétisation la plus populaire au monde. Comment diviser votre salaire pour vivre bien aujourd'hui tout en préparant demain — et pourquoi elle fonctionne même avec un petit revenu.</div>
+      <div class="featured-meta">
+        <span>📅 Janvier 2025</span>
+        <span>⏱️ 8 min de lecture</span>
+        <span>💚 Épargne</span>
+      </div>
+      <div class="read-more">Lire l'article <span>→</span></div>
+    </div>
+  </a>
+
+  <!-- GRILLE ARTICLES -->
+  <div class="articles-grid" id="articles-grid">
+
+    <a href="articles/pea-vs-assurance-vie.html" class="article-card" data-cat="investissement">
+      <div class="card-img" style="background:linear-gradient(135deg,#0d1f3b,#1a1040)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <rect x="10" y="20" width="60" height="90" rx="8" fill="rgba(79,142,255,0.2)" stroke="#4f8eff" stroke-width="1.5"/>
+          <text x="40" y="52" text-anchor="middle" fill="#4f8eff" font-family="Syne,sans-serif" font-size="13" font-weight="700">PEA</text>
+          <text x="40" y="72" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">+8%/an</text>
+          <text x="40" y="90" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">150k€ plafond</text>
+          <text x="80" y="68" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="18" font-weight="800">VS</text>
+          <rect x="90" y="20" width="60" height="90" rx="8" fill="rgba(0,229,160,0.15)" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="120" y="52" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="10" font-weight="700">Assurance</text>
+          <text x="120" y="65" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="10" font-weight="700">Vie</text>
+          <text x="120" y="82" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">Flexible</text>
+          <text x="120" y="97" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Succession</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-investissement">INVESTISSEMENT</span>
+        <div class="card-title">PEA vs Assurance-vie : le comparatif complet 2025</div>
+        <div class="card-excerpt">Lequel choisir pour votre situation ? Fiscalité, plafonds, flexibilité, rendement — on compare tout sans jargon.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 10 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/investir-100-euros-mois.html" class="article-card" data-cat="investissement">
+      <div class="card-img" style="background:linear-gradient(135deg,#0d2b1f,#1a1040)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <!-- Graphique barres croissantes -->
+          <rect x="15" y="90" width="18" height="25" rx="3" fill="rgba(0,229,160,0.3)" stroke="#00e5a0" stroke-width="1"/>
+          <rect x="40" y="75" width="18" height="40" rx="3" fill="rgba(0,229,160,0.4)" stroke="#00e5a0" stroke-width="1"/>
+          <rect x="65" y="55" width="18" height="60" rx="3" fill="rgba(0,229,160,0.55)" stroke="#00e5a0" stroke-width="1"/>
+          <rect x="90" y="35" width="18" height="80" rx="3" fill="rgba(0,229,160,0.7)" stroke="#00e5a0" stroke-width="1"/>
+          <rect x="115" y="10" width="18" height="105" rx="3" fill="#00e5a0"/>
+          <text x="124" y="8" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="9" font-weight="700">81k€</text>
+          <text x="20" y="125" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">5a</text>
+          <text x="45" y="125" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">10a</text>
+          <text x="70" y="125" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">15a</text>
+          <text x="95" y="125" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">20a</text>
+          <text x="120" y="125" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">25a</text>
+          <text x="15" y="50" fill="#f5a623" font-family="Syne,sans-serif" font-size="11" font-weight="700">100€/mois</text>
+          <text x="15" y="63" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">à 7% par an</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-investissement">INVESTISSEMENT</span>
+        <div class="card-title">Investir 100€/mois : ce que ça donne vraiment en 25 ans</div>
+        <div class="card-excerpt">La démonstration chiffrée de la puissance des intérêts composés. Le résultat va vous surprendre.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 7 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/erreurs-financieres-30-ans.html" class="article-card" data-cat="budget">
+      <div class="card-img" style="background:linear-gradient(135deg,#2b0d0d,#1a1040)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="80" y="55" text-anchor="middle" fill="#ff6b6b" font-family="Syne,sans-serif" font-size="48" font-weight="800">7</text>
+          <text x="80" y="80" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="14" font-weight="700">ERREURS</text>
+          <text x="80" y="98" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="11">à éviter avant 30 ans</text>
+          <circle cx="80" cy="65" r="58" fill="none" stroke="rgba(255,107,107,0.2)" stroke-width="1" stroke-dasharray="4 4"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-budget">BUDGET</span>
+        <div class="card-title">Les 7 erreurs financières à éviter avant 30 ans</div>
+        <div class="card-excerpt">Ces erreurs coûtent des dizaines de milliers d'euros sur une vie. La bonne nouvelle : il n'est jamais trop tard pour les corriger.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 9 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/negocier-credit-immobilier.html" class="article-card" data-cat="credit">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1500,#0d1f3b)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <rect x="30" y="40" width="100" height="65" rx="10" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="80" y="68" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="11" font-weight="700">TAUX INITIAL</text>
+          <text x="80" y="85" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="22" font-weight="800">3.8%</text>
+          <path d="M80 95 L80 115" stroke="#00e5a0" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="80" y="128" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="13" font-weight="800">→ 3.2% ✓</text>
+          <text x="80" y="30" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">économie : 8 400€</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-credit">CRÉDIT</span>
+        <div class="card-title">Comment négocier son crédit immobilier en 2025</div>
+        <div class="card-excerpt">Les banques s'attendent à être négociées. Voici exactement quoi dire, quand le faire, et combien vous pouvez économiser.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 11 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/etf-msci-world.html" class="article-card" data-cat="investissement">
+      <div class="card-img" style="background:linear-gradient(135deg,#0d1f3b,#0d2b1f)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <circle cx="80" cy="62" r="48" fill="rgba(79,142,255,0.1)" stroke="rgba(79,142,255,0.3)" stroke-width="1"/>
+          <ellipse cx="80" cy="62" rx="48" ry="18" fill="none" stroke="rgba(79,142,255,0.2)" stroke-width="1"/>
+          <line x1="32" y1="62" x2="128" y2="62" stroke="rgba(79,142,255,0.2)" stroke-width="1"/>
+          <text x="80" y="57" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="11" font-weight="700">MSCI</text>
+          <text x="80" y="72" text-anchor="middle" fill="#4f8eff" font-family="Syne,sans-serif" font-size="11" font-weight="700">WORLD</text>
+          <text x="80" y="122" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">1 500+ entreprises mondiales</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-investissement">INVESTISSEMENT</span>
+        <div class="card-title">ETF MSCI World : le placement préféré des experts</div>
+        <div class="card-excerpt">Pourquoi cet ETF est recommandé par Warren Buffett et des milliers d'investisseurs particuliers. Comment y investir dès aujourd'hui.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 9 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/livret-a-ldds-lep.html" class="article-card" data-cat="epargne">
+      <div class="card-img" style="background:linear-gradient(135deg,#0d2b1f,#111827)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <rect x="10" y="30" width="42" height="55" rx="6" fill="rgba(0,229,160,0.15)" stroke="#00e5a0" stroke-width="1.5"/>
+          <text x="31" y="53" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="10" font-weight="700">Livret</text>
+          <text x="31" y="66" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="10" font-weight="700">A</text>
+          <text x="31" y="78" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">3%</text>
+          <rect x="59" y="20" width="42" height="65" rx="6" fill="rgba(79,142,255,0.15)" stroke="#4f8eff" stroke-width="1.5"/>
+          <text x="80" y="43" text-anchor="middle" fill="#4f8eff" font-family="Syne,sans-serif" font-size="10" font-weight="700">LDDS</text>
+          <text x="80" y="68" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">3%</text>
+          <rect x="108" y="10" width="42" height="75" rx="6" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="129" y="43" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="10" font-weight="700">LEP</text>
+          <text x="129" y="68" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="14" font-weight="800">4%</text>
+          <text x="129" y="80" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="8">conditions</text>
+          <text x="80" y="115" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Tous défiscalisés</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-epargne">ÉPARGNE</span>
+        <div class="card-title">Livret A, LDDS, LEP : lequel choisir en 2025 ?</div>
+        <div class="card-excerpt">Les trois livrets réglementés décortiqués. Plafonds, taux, conditions, avantages — le guide complet pour choisir.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 7 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/sortir-des-dettes.html" class="article-card" data-cat="budget">
+      <div class="card-img" style="background:linear-gradient(135deg,#2b0d0d,#111827)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <path d="M30 100 Q80 20 130 100" fill="none" stroke="rgba(255,107,107,0.3)" stroke-width="2"/>
+          <path d="M30 100 Q80 40 130 100" fill="none" stroke="#00e5a0" stroke-width="2.5"/>
+          <circle cx="130" cy="100" r="8" fill="#00e5a0"/>
+          <text x="130" y="118" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="9" font-weight="700">LIBRE !</text>
+          <circle cx="30" cy="100" r="8" fill="#ff6b6b"/>
+          <text x="30" y="118" text-anchor="middle" fill="#ff6b6b" font-family="DM Sans,sans-serif" font-size="9">Dettes</text>
+          <text x="80" y="30" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="12" font-weight="700">MÉTHODE</text>
+          <text x="80" y="45" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="12" font-weight="700">AVALANCHE</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-budget">BUDGET</span>
+        <div class="card-title">La méthode pour sortir des dettes rapidement</div>
+        <div class="card-excerpt">Avalanche ou boule de neige ? Les deux stratégies expliquées avec des exemples chiffrés pour trouver celle qui vous convient.</div>
+        <div class="card-meta"><span>📅 Jan 2025</span><span>⏱️ 8 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/preparer-retraite.html" class="article-card" data-cat="retraite">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a0d2b,#0d1f3b)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="80" y="48" text-anchor="middle" fill="#9c7cff" font-family="Syne,sans-serif" font-size="13" font-weight="700">COMMENCER À</text>
+          <text x="53" y="75" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="20" font-weight="800">30</text>
+          <text x="80" y="75" text-anchor="middle" fill="#7a8aaa" font-family="Syne,sans-serif" font-size="14">·</text>
+          <text x="103" y="75" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="20" font-weight="800">40</text>
+          <text x="80" y="95" text-anchor="middle" fill="#7a8aaa" font-family="Syne,sans-serif" font-size="14">·</text>
+          <text x="80" y="112" text-anchor="middle" fill="#9c7cff" font-family="Syne,sans-serif" font-size="20" font-weight="800">50 ans</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-retraite">RETRAITE</span>
+        <div class="card-title">Préparer sa retraite à 30, 40 ou 50 ans</div>
+        <div class="card-excerpt">Il n'est jamais trop tôt ni trop tard. Le plan d'action concret adapté à chaque décennie de votre vie.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 12 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/budget-etudiant.html" class="article-card" data-cat="budget">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1040,#0d2b1f)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="80" y="45" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="32" font-weight="800">🎓</text>
+          <rect x="25" y="58" width="110" height="8" rx="4" fill="rgba(255,255,255,0.08)"/>
+          <rect x="25" y="58" width="44" height="8" rx="4" fill="#ff6b6b"/>
+          <text x="30" y="80" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Loyer 40%</text>
+          <rect x="25" y="85" width="110" height="8" rx="4" fill="rgba(255,255,255,0.08)"/>
+          <rect x="25" y="85" width="22" height="8" rx="4" fill="#4f8eff"/>
+          <text x="30" y="107" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Courses 20%</text>
+          <rect x="25" y="112" width="110" height="8" rx="4" fill="rgba(255,255,255,0.08)"/>
+          <rect x="25" y="112" width="11" height="8" rx="4" fill="#00e5a0"/>
+          <text x="30" y="128" fill="#00e5a0" font-family="DM Sans,sans-serif" font-size="9">Épargne 10% !</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-budget">BUDGET</span>
+        <div class="card-title">Budget étudiant : survivre et commencer à épargner</div>
+        <div class="card-excerpt">Même avec 800€/mois, il est possible d'épargner. Les astuces concrètes pour étudier sans se ruiner.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 7 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/immobilier-locatif.html" class="article-card" data-cat="investissement">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1500,#0d2b1f)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <rect x="40" y="55" width="80" height="60" rx="4" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="1.5"/>
+          <polygon points="80,20 30,58 130,58" fill="rgba(245,166,35,0.25)" stroke="#f5a623" stroke-width="1.5"/>
+          <rect x="60" y="85" width="40" height="30" rx="3" fill="rgba(0,229,160,0.2)" stroke="#00e5a0" stroke-width="1"/>
+          <text x="80" y="105" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="9" font-weight="700">LOYER</text>
+          <text x="155" y="40" text-anchor="end" fill="#f5a623" font-family="Syne,sans-serif" font-size="14" font-weight="800">5%</text>
+          <text x="155" y="54" text-anchor="end" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">rendement</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-investissement">INVESTISSEMENT</span>
+        <div class="card-title">L'immobilier locatif est-il encore rentable en 2025 ?</div>
+        <div class="card-excerpt">Charges, fiscalité, vacance locative, travaux — le calcul honnête du rendement réel de l'investissement immobilier.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 11 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/arnaques-financieres.html" class="article-card" data-cat="budget">
+      <div class="card-img" style="background:linear-gradient(135deg,#2b0d0d,#1a1500)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="80" y="55" text-anchor="middle" fill="#ff6b6b" font-family="Syne,sans-serif" font-size="40">⚠️</text>
+          <text x="80" y="82" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="13" font-weight="700">ARNAQUES</text>
+          <text x="80" y="98" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="11">les plus courantes</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-budget">VIGILANCE</span>
+        <div class="card-title">Les arnaques financières les plus courantes en 2025</div>
+        <div class="card-excerpt">Faux placements, crypto-arnaques, phishing bancaire — comment les reconnaître et ne jamais se faire piéger.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 8 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/inflation-proteger-argent.html" class="article-card" data-cat="investissement">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1040,#2b1a0d)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="30" y="70" fill="white" font-family="Syne,sans-serif" font-size="28" font-weight="800">100€</text>
+          <path d="M90 60 L115 60" stroke="#ff6b6b" stroke-width="2" marker-end="url(#arr)"/>
+          <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#ff6b6b"/></marker></defs>
+          <text x="120" y="70" fill="#ff6b6b" font-family="Syne,sans-serif" font-size="18" font-weight="800">82€</text>
+          <text x="80" y="95" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">en 10 ans à 2%/an</text>
+          <text x="80" y="30" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="11" font-weight="700">INFLATION</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-investissement">INFLATION</span>
+        <div class="card-title">Inflation : comment protéger son argent efficacement</div>
+        <div class="card-excerpt">L'inflation érode silencieusement votre patrimoine. Les actifs et stratégies qui permettent de garder votre pouvoir d'achat.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 9 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/freelance-finances.html" class="article-card" data-cat="budget">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1040,#0d1f3b)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <rect x="20" y="30" width="120" height="75" rx="10" fill="rgba(79,142,255,0.1)" stroke="rgba(79,142,255,0.3)" stroke-width="1.5"/>
+          <text x="80" y="58" text-anchor="middle" fill="#4f8eff" font-family="Syne,sans-serif" font-size="13" font-weight="700">FREELANCE</text>
+          <line x1="20" y1="68" x2="140" y2="68" stroke="rgba(79,142,255,0.2)" stroke-width="1"/>
+          <text x="80" y="84" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="10">Revenus irréguliers ?</text>
+          <text x="80" y="98" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="10" font-weight="700">Stratégie adaptée ✓</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-budget">FREELANCE</span>
+        <div class="card-title">Indépendants & freelances : gérer ses finances autrement</div>
+        <div class="card-excerpt">Revenus variables, charges sociales, TVA, épargne de précaution renforcée — le guide financier des travailleurs indépendants.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 10 min</span></div>
+      </div>
+    </a>
+
+    <a href="articles/fire-retraite-anticipee.html" class="article-card" data-cat="retraite">
+      <div class="card-img" style="background:linear-gradient(135deg,#1a1040,#0d2b1f)">
+        <svg width="160" height="130" viewBox="0 0 160 130">
+          <text x="80" y="50" text-anchor="middle" fill="white" font-family="Syne,sans-serif" font-size="28">🔥</text>
+          <text x="80" y="78" text-anchor="middle" fill="#f5a623" font-family="Syne,sans-serif" font-size="22" font-weight="800">F.I.R.E</text>
+          <text x="80" y="95" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Financial Independence</text>
+          <text x="80" y="108" text-anchor="middle" fill="#7a8aaa" font-family="DM Sans,sans-serif" font-size="9">Retire Early</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag tag-retraite">RETRAITE</span>
+        <div class="card-title">FIRE : comment prendre sa retraite avant 50 ans</div>
+        <div class="card-excerpt">Le mouvement FIRE expliqué : la règle des 4%, le taux d'épargne nécessaire et si c'est vraiment accessible en France.</div>
+        <div class="card-meta"><span>📅 Fév 2025</span><span>⏱️ 13 min</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- AD -->
+  <div class="ad-block" style="max-width:740px;margin:40px auto">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Publicité</div>
+    <div class="ad-inner"><span style="font-size:13px;color:var(--muted)">728×90</span></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="index.html">Accueil</a>
+    <a href="calculateur.html">Calculateur crédit</a>
+    <a href="epargne.html">Simulateur épargne</a>
+    <a href="chatbot.html">Assistant</a>
+  </div>
+  <p>© 2025 FinanceIQ · Articles à caractère éducatif uniquement · Pas de conseil en investissement</p>
+</footer>
+
+<script>
+function filterArticles(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.article-card').forEach(card => {
+    card.style.display = (cat === 'tous' || card.dataset.cat === cat) ? 'flex' : 'none';
+  });
+}
+</script>
+</body>
+</html>
