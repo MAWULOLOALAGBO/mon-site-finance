@@ -190,6 +190,26 @@
 
 <script>
 // ═══════════════════════════════════════════════
+// Ajouter mémoire
+// ═══════════════════════════════════════════════
+let userProfile = {
+  objectif: null,
+  revenu: null,
+  step: null
+};
+// ═══════════════════════════════════════════════
+// Détecter intention
+// ═══════════════════════════════════════════════
+  function detectIntent(query) {
+  const q = query.toLowerCase();
+
+  if (q.includes('épargner') || q.includes('épargne')) return 'epargne';
+  if (q.includes('acheter') || q.includes('immobilier')) return 'immobilier';
+  if (q.includes('budget')) return 'budget';
+
+  return null;
+}
+// ═══════════════════════════════════════════════
 // BASE DE CONNAISSANCES — 60+ questions/réponses
 // ═══════════════════════════════════════════════
 const KB = [
@@ -368,6 +388,37 @@ const KB = [
   }
 ];
 
+  const ARTICLES = [
+  {
+    tags: ['50/30/20','budget'],
+    title: 'Règle 50/30/20',
+    url: 'articles/regle-50-30-20.html'
+  },
+  {
+    tags: ['pea','assurance vie'],
+    title: 'PEA vs Assurance-vie',
+    url: 'articles/pea-vs-assurance-vie.html'
+  },
+  {
+    tags: ['investir','100 euros'],
+    title: 'Investir 100€ par mois',
+    url: 'articles/investir-100-euros-mois.html'
+  },
+  {
+    tags: ['immobilier','crédit'],
+    title: 'Négocier son crédit immobilier',
+    url: 'articles/negocier-credit-immobilier.html'
+  }
+];
+
+  function findArticle(query) {
+  const q = query.toLowerCase();
+
+  return ARTICLES.find(a =>
+    a.tags.some(tag => q.includes(tag))
+  );
+}
+
 // ═══════════════════════
 // MOTEUR DE RECHERCHE
 // ═══════════════════════
@@ -452,24 +503,95 @@ function buildResponse(entry) {
 
 function respond(query) {
   showTyping();
+
   const delay = 600 + Math.random() * 400;
+
   setTimeout(() => {
     hideTyping();
+
+    const intent = detectIntent(query);
+
+    // =========================
+    // MODE CONVERSATION (NEW)
+    // =========================
+
+    // FLOW ÉPARGNE
+    if (intent === 'epargne' || userProfile.objectif === 'epargne') {
+
+      if (!userProfile.revenu && userProfile.step !== 'ask_revenu') {
+        userProfile.objectif = 'epargne';
+        userProfile.step = 'ask_revenu';
+
+        addMsg('bot', `
+          <p>Bonne idée 💰</p>
+          <p>👉 Tu gagnes combien par mois environ ?</p>
+        `);
+        return;
+      }
+
+      if (userProfile.step === 'ask_revenu') {
+        const revenu = parseInt(query);
+
+        if (!isNaN(revenu)) {
+          userProfile.revenu = revenu;
+          userProfile.step = 'done';
+
+          const min = Math.round(revenu * 0.05);
+          const max = Math.round(revenu * 0.2);
+
+          addMsg('bot', `
+            <p>Parfait 👌</p>
+            <p>Avec ${revenu}€, tu peux viser :</p>
+            <p><strong>${min}€ à ${max}€ / mois</strong></p>
+
+            <a href="epargne.html" class="tool-link">
+              <span class="tool-link-icon">📈</span>
+              <div class="tool-link-info">
+                <div class="tl-name">Simulateur d'épargne</div>
+                <div class="tl-desc">Tester avec ton cas</div>
+              </div>
+              <span class="tool-link-arrow">→</span>
+            </a>
+          `);
+          return;
+        }
+      }
+    }
+
+    // =========================
+    // SINON → TON SYSTÈME ACTUEL
+    // =========================
+
     const entry = findBestAnswer(query);
+
     if (entry) {
       addMsg('bot', buildResponse(entry));
+
+      // 🔥 AJOUT BLOG ICI
+      const article = findArticle(query);
+      if (article) {
+        addMsg('bot', `
+          <p>📖 Tu peux aussi lire cet article :</p>
+          <a href="${article.url}" class="tool-link">
+            <span class="tool-link-icon">📘</span>
+            <div class="tool-link-info">
+              <div class="tl-name">${article.title}</div>
+              <div class="tl-desc">Approfondir le sujet</div>
+            </div>
+            <span class="tool-link-arrow">→</span>
+          </a>
+        `);
+      }
+
     } else {
-      // Réponse par défaut avec guide vers les outils
-      addMsg('bot', `<p>Je n'ai pas de réponse précise sur ce sujet dans ma base de connaissances. Voici ce qui pourrait vous aider :</p>
-        <a href="index.html#budget" class="tool-link"><span class="tool-link-icon">💰</span><div class="tool-link-info"><div class="tl-name">Simulateur de budget</div><div class="tl-desc">Gérez vos revenus et dépenses</div></div><span class="tool-link-arrow">→</span></a>
-        <a href="calculateur.html" class="tool-link"><span class="tool-link-icon">🏦</span><div class="tool-link-info"><div class="tl-name">Calculateur de crédit</div><div class="tl-desc">Simulez vos mensualités</div></div><span class="tool-link-arrow">→</span></a>
-        <a href="epargne.html" class="tool-link"><span class="tool-link-icon">📈</span><div class="tool-link-info"><div class="tl-name">Simulateur d'épargne</div><div class="tl-desc">Projetez votre capital</div></div><span class="tool-link-arrow">→</span></a>
-        <div class="chips">
-          <button class="chip" onclick="askTopic('Comment épargner ?')">💰 Épargne</button>
-          <button class="chip" onclick="askTopic('Crédit immobilier ?')">🏠 Crédit</button>
-          <button class="chip" onclick="askTopic('Qu\\'est-ce que le PEA ?')">📊 Investissement</button>
-        </div>`);
+      addMsg('bot', `<p>Je peux t’aider sur :</p>
+        <ul>
+          <li>💰 Épargne</li>
+          <li>🏠 Immobilier</li>
+          <li>📊 Budget</li>
+        </ul>`);
     }
+
   }, delay);
 }
 
